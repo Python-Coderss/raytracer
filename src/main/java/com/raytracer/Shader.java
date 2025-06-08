@@ -9,6 +9,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
+import org.lwjgl.system.MemoryStack; // Added for Matrix3fv
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.FloatBuffer; // Added for Matrix3fv
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -149,9 +156,29 @@ public class Shader {
         }
     }
 
+    public void setUniform3i(String name, int v0, int v1, int v2) {
+        int location = getUniformLocation(name);
+        if (location != -1) {
+            glUniform3i(location, v0, v1, v2);
+        }
+    }
+
+    public void setUniformMatrix3fv(String name, float[] value) {
+        int location = getUniformLocation(name);
+        if (location != -1) {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                java.nio.FloatBuffer buffer = stack.mallocFloat(9);
+                buffer.put(value).flip();
+                // false for 'transpose' means the matrix is supplied in column-major order
+                glUniformMatrix3fv(location, false, buffer);
+            }
+        }
+    }
+
     public void setUniformMatrix4fv(String name, FloatBuffer buffer) {
         int location = getUniformLocation(name);
         if (location != -1) {
+            // false for 'transpose' means the matrix is supplied in column-major order
             glUniformMatrix4fv(location, false, buffer);
         }
     }
