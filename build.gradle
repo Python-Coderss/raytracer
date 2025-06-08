@@ -14,25 +14,28 @@ ext {
     lwjglVersion = "3.3.3"
     // For now, we'll use windows natives as a placeholder.
     // User can modify this later if needed.
+    // lwjglNatives "natives-windows", "natives-linux", "natives-macos" based on OS.
     lwjglNatives = "natives-windows"
 }
 
 dependencies {
-    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    // implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion") // Removed for Gradle 4.4.1 compatibility
+    // Explicit versions will be used for each LWJGL module as already done below.
 
-    implementation "org.lwjgl:lwjgl"
-    implementation "org.lwjgl:lwjgl-glfw"
-    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
 
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 }
 
-java {
-    sourceCompatibility = ext.javaVersion
-    targetCompatibility = ext.javaVersion
-}
+// Configure Java compilation options for Gradle 4.4.1
+sourceCompatibility = ext.javaVersion
+targetCompatibility = ext.javaVersion
+// The java { ... } block might not be needed or recognized in this form by Gradle 4.4.1
+// If other java specific configurations were here, they'd need different syntax.
 
 jar {
     manifest {
